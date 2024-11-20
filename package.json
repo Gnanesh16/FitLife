@@ -1,0 +1,14 @@
+{
+  "name": "web-testing",
+  "version": "1.0.0",
+  "scripts": {
+    "lint:html": "htmlhint 'index.html'",
+    "lint:css": "stylelint 'css/**/*.css'",
+    "test:js": "jest --coverage"
+  },
+  "devDependencies": {
+    "htmlhint": "^0.16.3",
+    "stylelint": "^15.0.0",
+    "jest": "^29.0.0"
+  }
+}
