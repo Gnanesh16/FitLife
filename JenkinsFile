@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    tools {
+        nodejs "NodeJS"  // Ensure Node.js is configured in Jenkins
+    }
     stages {
         stage('compile') {
 	         steps {
@@ -19,17 +22,40 @@ pipeline {
                }
            }		
         }
-        stage('unit-test') {
-	         steps {
-                echo 'unittest..'
-      	        sh script: '/opt/maven/bin/mvn test'
-                 }
-	          post {
-               success {
-                   junit 'target/surefire-reports/*.xml'
-               }
-           }			
+        stages {
+        stage('Install Dependencies') {
+            steps {
+                // Install all npm dependencies
+                sh 'npm install'
+            }
         }
+        stage('Lint HTML') {
+            steps {
+                // Run HTMLHint to lint HTML files
+                sh 'npm run lint:html'
+            }
+        }
+        stage('Lint CSS') {
+            steps {
+                // Run Stylelint to lint CSS files
+                sh 'npm run lint:css'
+            }
+        }
+        stage('Test JavaScript') {
+            steps {
+                // Run Jest to execute JavaScript tests with coverage
+                sh 'npm run test:js'
+            }
+        }
+    }
+    post {
+        always {
+            // Archive test results and coverage
+            junit '**/test-results.xml'
+            archiveArtifacts artifacts: 'coverage/**', allowEmptyArchive: true
+        }
+    }
+}
         stage('package') {
 	         steps {
                 echo 'package......'
